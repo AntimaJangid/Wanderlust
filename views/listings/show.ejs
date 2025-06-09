@@ -36,7 +36,16 @@
     </form>
   </div>
   <% } %>
+  <br />
   <hr />
+  <br />
+  <div
+    id="map"
+    style="height: 400px; width: 100%; margin-top: 1rem"
+    data-lat="<%= listing.geometry.lat %>"
+    data-lng="<%= listing.geometry.lng %>"
+    data-title="<%= listing.title %>"
+  ></div>
 
   <div class="col-8 offset-3 mb-3">
     <% if(currUser){ %>

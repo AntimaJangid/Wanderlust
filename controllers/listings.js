@@ -1,5 +1,6 @@
 const Listing = require("../models/listing");
 const User = require("../models/user")
+const axios = require("axios");
 
 module.exports.index = async (req,res) => {
     const allListings=  await Listing.find({}); 
@@ -28,6 +29,30 @@ module.exports.createListing = async (req,res) => {
     const newListing =new Listing(req.body.listing); 
     newListing.owner = req.user._id;
     newListing.image = {url,filename};
+     // Get lat/lng from location using Nominatim
+  const location = req.body.listing.location;
+
+  
+    const geoRes = await axios.get("https://nominatim.openstreetmap.org/search", {
+      params: {
+        q: location,
+        format: "json",
+        limit: 1
+      },
+      headers: {
+        "User-Agent": "Wanderlust/1.0 (antimajangid2404@gmail.com)"
+      }
+    });
+
+    if (geoRes.data.length > 0) {
+      const geo = geoRes.data[0];
+      newListing.geometry = {
+        lat: parseFloat(geo.lat),
+        lng: parseFloat(geo.lon)
+      };
+    }
+  
+    
     await newListing.save();  
     console.log(newListing);
     req.flash("success" , "New Listing created");
